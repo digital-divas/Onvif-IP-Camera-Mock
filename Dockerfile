@@ -28,10 +28,10 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-COPY --from=builder /app/target/release/Onvif-IP-Camera-Mock /app/Onvif-IP-Camera-Mock
+COPY --from=builder /app/target/release/onvif-ip-camera-mock /app/onvif-ip-camera-mock
 
 COPY assets ./assets
 
 ENV RUST_LOG=info
 
-CMD ["./Onvif-IP-Camera-Mock"]
+CMD ["./onvif-ip-camera-mock"]

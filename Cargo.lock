@@ -3,18 +3,6 @@
 version = 4
 
 [[package]]
-name = "Onvif-IP-Camera-Mock"
-version = "0.1.0"
-dependencies = [
- "ab_glyph",
- "chrono",
- "image",
- "imageproc",
- "rand 0.8.5",
- "tokio",
-]
-
-[[package]]
 name = "ab_glyph"
 version = "0.2.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -826,6 +814,18 @@ name = "once_cell"
 version = "1.21.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "42f5e15c9953c5e4ccceeb2e7382a716482c34515315f7b03532b8b4e8393d2d"
+
+[[package]]
+name = "onvif-ip-camera-mock"
+version = "0.1.0"
+dependencies = [
+ "ab_glyph",
+ "chrono",
+ "image",
+ "imageproc",
+ "rand 0.8.5",
+ "tokio",
+]
 
 [[package]]
 name = "owned_ttf_parser"

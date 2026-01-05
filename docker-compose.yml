@@ -6,7 +6,6 @@ services:
     container_name: mediamtx
     ports:
       - "8554:8554"
-    command: ["mediamtx"]
 
   onvif-ip-camera-mock:
     build: .
@@ -15,4 +14,4 @@ services:
       - mediamtx
     environment:
       RTSP_URL: rtsp://mediamtx:8554/cam1
-    restart: unless-stopped
+    restart: always
