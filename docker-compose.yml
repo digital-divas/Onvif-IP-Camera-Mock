@@ -8,8 +8,10 @@ services:
       - "8554:8554"
 
   onvif-ip-camera-mock:
-    build: .
-    container_name: onvif-ip-camera-mock
+    # if you want to build it locally
+    # build: .
+    # container_name: onvif-ip-camera-mock
+    image: ezequielmr94/onvif-ip-camera-mock
     depends_on:
       - mediamtx
     environment:
