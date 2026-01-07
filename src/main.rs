@@ -16,28 +16,42 @@ async fn main() {
 
     let rtsp_url = std::env::var("RTSP_URL").unwrap_or("rtsp://127.0.0.1:8554/cam1".into());
 
-    // fonte
+    run_stream_supervisor(rtsp_url, width, height, fps).await;
+}
+
+async fn run_stream_supervisor(rtsp_url: String, width: u32, height: u32, fps: u32) {
+    let retry_delay = Duration::from_secs(5);
+    let mut state: CircleState = CircleState::new(width, height);
     let font_data = include_bytes!("../assets/FreeMono.ttf");
     let font = FontArc::try_from_slice(font_data).expect("invalid font");
 
-    let mut state = CircleState::new(width, height);
-
-    // inicia ffmpeg
-    let mut ffmpeg_stdin = ffmpeg::start_ffmpeg(&rtsp_url, width, height, fps).await;
-
-    println!("Streaming to {}", rtsp_url);
-
     loop {
-        state.update();
+        eprintln!("Starting ffmpeg -> {}", rtsp_url);
 
-        let frame = render_frame(&state, width, height, &font);
+        let mut ffmpeg = match ffmpeg::start_ffmpeg(&rtsp_url, width, height, fps).await {
+            Ok(p) => p,
+            Err(e) => {
+                eprintln!("Failed to start ffmpeg: {e}");
+                sleep(retry_delay).await;
+                continue;
+            }
+        };
 
-        // envia frame cru (RGB24)
-        if ffmpeg_stdin.write_all(frame.as_raw()).await.is_err() {
-            eprintln!("ffmpeg error");
-            break;
+        loop {
+            state.update();
+            let frame = render_frame(&state, width, height, &font);
+
+            if let Err(e) = ffmpeg.stdin.write_all(frame.as_raw()).await {
+                eprintln!("ffmpeg stream error: {e}");
+                break;
+            }
+
+            sleep(Duration::from_millis(1000 / fps as u64)).await;
         }
 
-        sleep(Duration::from_millis(1000 / fps as u64)).await;
+        let _ = ffmpeg.child.kill().await;
+
+        eprintln!("Reconnecting in {}s...", retry_delay.as_secs());
+        sleep(retry_delay).await;
     }
 }

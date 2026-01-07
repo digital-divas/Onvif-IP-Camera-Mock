@@ -820,6 +820,7 @@ name = "onvif-ip-camera-mock"
 version = "0.1.0"
 dependencies = [
  "ab_glyph",
+ "anyhow",
  "chrono",
  "image",
  "imageproc",
