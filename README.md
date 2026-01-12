@@ -162,6 +162,6 @@ RTSP_URL=rtsp://127.0.0.1:8554/cam1 ./target/release/onvif-ip-camera-mock
 
 - [ ] support other video CODECs (HVEC, AV1, etc)
 - [ ] support RTMP
-- [ ] generate an mock for ONVIF showing some response to the stream screen
+- [x] generate an mock for ONVIF showing some response to the stream screen
 - [ ] configure fake detections of vehicle plates
 - [ ] configure fake detections of people's face
