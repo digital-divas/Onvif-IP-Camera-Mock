@@ -1,5 +1,6 @@
 mod circle;
 mod ffmpeg;
+mod http_ui;
 mod onvif;
 mod render;
 
@@ -64,6 +65,10 @@ async fn main() {
 
     tokio::spawn(async move {
         onvif::start_http_server(http_state).await;
+    });
+
+    tokio::spawn(async move {
+        http_ui::start_http_server().await;
     });
 
     run_stream_supervisor(rtsp_url, width, height, fps, stream_state).await;
