@@ -21,6 +21,12 @@ COPY assets ./assets
 
 RUN cargo build --release
 
+RUN echo "---- DEBUG FILESYSTEM ----"
+RUN ls -lah /app
+RUN ls -lah /app/frontend || true
+RUN ls -lah /app/ui || true
+RUN find /app -maxdepth 3 -type d
+
 # ============================
 # Runtime
 # ============================
