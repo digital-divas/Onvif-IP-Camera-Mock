@@ -39,6 +39,7 @@ services:
     container_name: mediamtx
     ports:
       - "8554:8554"
+      - "8888:8888"
 
   onvif-ip-camera-mock:
     image: ezequielmr94/onvif-ip-camera-mock
@@ -48,6 +49,7 @@ services:
       RTSP_URL: rtsp://mediamtx:8554/cam1
     ports:
       - "8000:8000"
+      - "80:80"
     restart: always
 ```
 

@@ -11,6 +11,7 @@ use roxmltree::Document;
 use serde::Serialize;
 use std::net::SocketAddr;
 use std::sync::{Arc, Mutex};
+use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
 use tracing::info_span;
 
@@ -799,9 +800,9 @@ fn get_response_for_ptz(action: String, state: &State<SharedCameraState>, xml: &
 
         let mut s = state.lock().unwrap();
 
-        s.pan += delta_pan.parse::<f32>().unwrap();
-        s.tilt += delta_tilt.parse::<f32>().unwrap();
-        s.zoom += delta_zoom.parse::<f32>().unwrap();
+        s.pan += delta_pan.parse::<f32>().unwrap_or(0.0);
+        s.tilt += delta_tilt.parse::<f32>().unwrap_or(0.0);
+        s.zoom += delta_zoom.parse::<f32>().unwrap_or(0.0);
 
         s.pan = s.pan.clamp(-1.0, 1.0);
         s.tilt = s.tilt.clamp(-1.0, 1.0);
@@ -884,6 +885,11 @@ pub async fn start_http_server(onvif_state: SharedCameraState) {
     let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
     eprintln!("HTTP server listening on {}", addr);
 
+    let cors = CorsLayer::new()
+        .allow_origin(Any)
+        .allow_methods([Method::POST, Method::GET])
+        .allow_headers(Any);
+
     let app = Router::new()
         .route("/health", get(health))
         .route("/onvif/device_service", post(device_server))
@@ -892,6 +898,7 @@ pub async fn start_http_server(onvif_state: SharedCameraState) {
         .route("/onvif/PTZ", post(ptz))
         .with_state(onvif_state)
         .fallback(fallback_handler)
+        .layer(cors)
         .layer(
             TraceLayer::new_for_http().make_span_with(|request: &Request<_>| {
                 info_span!(

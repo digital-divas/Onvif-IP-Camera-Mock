@@ -7,13 +7,16 @@ RUN apt-get update && \
     apt-get install -y \
     pkg-config \
     libssl-dev \
-    ca-certificates && \
+    ca-certificates \
+    nodejs \
+    npm && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 COPY Cargo.toml Cargo.lock ./
 COPY src ./src
+COPY frontend ./frontend
 COPY assets ./assets
 
 RUN cargo build --release
@@ -32,6 +35,7 @@ RUN apt-get update && \
 WORKDIR /app
 
 COPY --from=builder /app/target/release/onvif-ip-camera-mock /app/onvif-ip-camera-mock
+COPY --from=builder /app/ui ./ui
 COPY assets ./assets
 
 ENV RUST_LOG=info
