@@ -14,9 +14,13 @@ RUN apt-get update && \
 
 WORKDIR /app
 
+COPY frontend ./frontend
+
+RUN cd frontend && npm install
+RUN cd frontend && npm run build
+
 COPY Cargo.toml Cargo.lock ./
 COPY src ./src
-COPY frontend ./frontend
 COPY assets ./assets
 
 RUN cargo build --release
